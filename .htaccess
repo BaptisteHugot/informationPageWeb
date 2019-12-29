@@ -1,0 +1,7 @@
+#@file .htaccess 
+#@brief Empêche l'accès au fichier db.ini
+
+<Files "db.ini">
+Order Allow,Deny
+Deny from all
+</Files>

@@ -1,12 +1,18 @@
 # informationPageWeb
 Ce programme permet d'extraire les informations suivantes concernant une URL entrée préalablement par un utilisateur :
-* Les informations sur les serveurs du domaine
+* Les informations sur les serveurs du domaine (adresses IPv4 et IPv6), comprenant la liste des derniers sites testés, un hall of fame (sites dont tous les serveurs sont disponibles en IPv6) et un hall of shame (sites dont tous les serveurs sont disponibles en IPv4 uniquement)
 * Le Whois du domaine
 * Les entêtes HTTP de la page
 * Les balises meta de la page
+* Les adresses IP de l'utilisateur (IPv4 et IPv6)
+* Le User Agent du navigateur de l'utilisateur
+
+Ce programme contient également deux sous-dossiers :
+* cronCheck, permettant d'effectuer un Cron mettant à jour la table contenant la liste des serveurs des domaines déjà testés et dont le dernier test remonte à plus d'une semaine
+* fileUpload, permettant de faire des tests sur les serveurs de plusieurs domaines en même temps à l'aide d'un fichier au format .csv préalablement rempli (un exemple de tel fichier est disponible dans le sous-dossier)
 
 ## Exemple
-Un exemple complet est disponible sur [mon site personnel](https://www.baptistehugot.cf/github/informationPageWeb/index.php).
+Un exemple complet de ce programme est disponible sur [mon site personnel](https://www.baptistehugot.cf/github/informationPageWeb/index.php).
 
 ## Ecrit avec
 * [PHP](https://secure.php.net/) - Le langage de programmation utilisé pour récupérer les informations pertinentes

@@ -14,6 +14,7 @@ ini_set('display_errors','1');
 
 include("./../basicFunctions.php");
 include("./../db.php");
+include("./../db_traitements.php");
 
 /**
 * Insertion dans la base de données lorsque cela est fait automatiquement par un CRON

@@ -1,15 +1,16 @@
 # informationPageWeb
 Ce programme permet d'extraire les informations suivantes concernant une URL entrée préalablement par un utilisateur :
-* Les informations sur les serveurs du domaine (adresses IPv4 et IPv6), comprenant la liste des derniers sites testés, un hall of fame (sites dont tous les serveurs sont disponibles en IPv6) et un hall of shame (sites dont tous les serveurs sont disponibles en IPv4 uniquement)
+* Les informations sur les serveurs du domaine (adresses IPv4 et IPv6), comprenant la liste des derniers sites testés, un temple de la renommée (sites dont tous les serveurs sont disponibles en IPv6) et un mur de la honte (sites dont tous les serveurs sont disponibles en IPv4 uniquement)
 * Le Whois du domaine
 * Les entêtes HTTP de la page
 * Les balises meta de la page
 * Les adresses IP de l'utilisateur (IPv4 et IPv6)
 * Le User Agent du navigateur de l'utilisateur
 
-Ce programme contient également deux sous-dossiers :
-* cronCheck, permettant d'effectuer un Cron mettant à jour la table contenant la liste des serveurs des domaines déjà testés et dont le dernier test remonte à plus d'une semaine
+Ce programme contient également trois sous-dossiers :
+* cronCheck, permettant d'effectuer un Cron mettant à jour la table contenant la liste des serveurs des domaines déjà testés et dont le dernier test remonte à plus d'une semaine et de mettre à jour les tables nécessaires pour afficher les graphiques présents dans le dossier statistics
 * fileUpload, permettant de faire des tests sur les serveurs de plusieurs domaines en même temps à l'aide d'un fichier au format .csv préalablement rempli (un exemple de tel fichier est disponible dans le sous-dossier)
+* statistics, permettant d'afficher des statistiques sous forme de graphes sur le nombre de sites testés et la qualité des sites testés
 
 ## Exemple
 Un exemple complet de ce programme est disponible sur [mon site personnel](https://www.baptistehugot.cf/github/informationPageWeb/index.php).
@@ -18,8 +19,13 @@ Un exemple complet de ce programme est disponible sur [mon site personnel](https
 * [PHP](https://secure.php.net/) - Le langage de programmation utilisé pour récupérer les informations pertinentes
 * [HTML](https://www.w3.org/html/) - Le langage de programmation utilisé pour afficher la page Internet
 * [CSS](https://www.w3.org/Style/CSS/) - Le langage de programmation utilisé pour gérer les styles de la page Internet
+* [SQL](https://www.iso.org/standard/63555.html) - Le langage de programmation utilisé pour stocker les éléments dans une base de données
+* [Javascript](https://www.ecma-international.org/publications/standards/Ecma-262.htm) - Le langage de programmation utilisé pour gérer une partie des styles
 
 ## Bibliothèques utilisées
+* [jQuery](https://jquery.com/) - La bibliothèque utilisée pour gérer une partie des styles
+* [Chart.js](https://www.chartjs.org/) - La bibliothèque utilisée pour afficher des graphiques
+* [ipify](https://www.ipify.org/) - La bibliothèque utilisée pour connaître les adresses IP de l'utilisateur
 * [php-whois](https://github.com/regru/php-whois/blob/master/src/Phois/Whois/whois.servers.json) - Contient la liste des serveurs utilisés par les registrars
 
 ## Versions

@@ -22,6 +22,8 @@ ini_set('display_errors','1');
 
 include("./cronFunctions.php");
 
+$fileSQL = "./../db_traitements.sql";
+
 /*
 * Permet au cronjob d'exécuter la fonction "automaticCheck" si l'utilisateur appelle l'élément "automaticCheck" en argument de la ligne de commande
 */
@@ -31,6 +33,13 @@ if(!empty($argv[1])){
 		$start = microtime(true);
 		automaticCheck();
 		mysqli_close($connexion); // On ferme la connexion à la base de données
+		$end = microtime(true);
+		displayExecutionTime($start, $end);
+		break;
+		case "updateTables":
+		$start = microtime(true);
+		insertionBDD($connexion, $fileSQL);
+		mysqli_close($connexion);
 		$end = microtime(true);
 		displayExecutionTime($start, $end);
 		break;

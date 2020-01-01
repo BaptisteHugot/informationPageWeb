@@ -20,6 +20,11 @@ ini_set('display_errors','1');
 	<meta charset="utf-8" />
 	<title>Récupération d'informations sur une page Internet</title>
 	<link rel="StyleSheet" type="text/css" href="style.css">
+	<script
+	src="https://code.jquery.com/jquery-3.4.1.min.js"
+	integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+	crossorigin="anonymous"></script>
+	<script src="./style.js"></script>
 </head>
 
 <body>
@@ -39,7 +44,8 @@ ini_set('display_errors','1');
 
 		<br />
 
-		<input type="text" class="specificField" id="site" name="site" placeholder="URL de la page Internet : " />
+		<input type="text" class="specificField serveur whois http meta" id="site" name="site" placeholder="URL de la page Internet : " />
+
 		<br />
 
 		<input type="submit" name="submit"></input>
@@ -86,6 +92,8 @@ if(isset($_POST["choix"]) && $_POST["choix"] != ""){
 					displayDomainServers($arrayWebsiteIPv4WithoutSubdomain, $arrayWebsiteIPv6WithoutSubdomain, $arrayWebsiteIPv4WithSubdomain, $arrayWebsiteIPv6WithSubdomain, $arrayWebsiteIPv4WithWWW, $arrayWebsiteIPv6WithWWW, $arrayNSServers, $arrayNSServersIPv4, $arrayNSServersIPv6, $arrayMXServers, $arrayMXServersIPv4, $arrayMXServersIPv6, $arrayCAAServers, $arraySOAMname, $arraySOARname, $hasSubdomain, $hasWWW, $hostWithoutSubdomain, $hostWithWWW, $hostWithSubdomain);
 
 					manualCheckInsertion($arrayResultsIPv6, $hostWithoutSubdomain);
+
+					manualDateInsertion();
 				} else if($radioValue === "whois"){ // On récupère les informations du Whois
 					$whois = array();
 					$whois = getWhois($hostWithoutSubdomain,$extension);

@@ -212,6 +212,34 @@ function manualCheckInsertion(array $arrayResultsIPv6, string $hostWithoutSubdom
 }
 
 /**
+* Incrémente la table numberOfTests à chaque test effectué par un utilisateur
+*/
+function manualDateInsertion(){
+	date_default_timezone_set('UTC');
+	$dateManualEntry = date("Y-m-d");
+
+	global $connexion;
+
+	$dateManualEntry = $connexion->real_escape_string($dateManualEntry);// Pour éviter une injection SQL
+	$stmt = $connexion->prepare("SELECT dateTests FROM numberOfTests WHERE dateTests = ? LIMIT 1");
+	$stmt->bind_param("s", $dateManualEntry);
+	$stmt->execute();
+	$result = $stmt->get_result();
+
+	if($result->num_rows === 0){ // Pas de résultat trouvé, on insère
+		$stmtInsertion = $connexion->prepare("INSERT INTO numberOfTests (dateTests, numberTests) VALUES (?, 1)");
+		$stmtInsertion->bind_param("s", $dateManualEntry);
+		$stmtInsertion->execute();
+	}else{ // On modifie le résulat existant
+		$stmtUpdate = $connexion->prepare("UPDATE numberOfTests SET numberTests = numberTests + 1 WHERE dateTests = ?");
+		$stmtUpdate->bind_param("s", $dateManualEntry);
+		$stmtUpdate->execute();
+	}
+
+	mysqli_free_result($result); // On libère la variable utilisée pour récupérer le résultat de la requête SQL
+}
+
+/**
 * Affiche les sites qui sont 100% en IPv6
 */
 function displayHallOfFame(){
@@ -293,7 +321,7 @@ function displayHallOfShame(){
 function lastManualChecks(){
 	global $connexion;
 
-	$stmt = $connexion->prepare("SELECT domain, resultIPv6, DATE_FORMAT(dateLastManualCheck,'%d/%m/%Y') AS dateLastCheck, DATE_FORMAT(dateLastManualCheck, '%H:%i:%s') AS timeLastCheck FROM websitesIPv6 ORDER BY dateLastManualCheck DESC LIMIT 500");
+	$stmt = $connexion->prepare("SELECT domain, resultIPv6, dateLastManualCheck FROM websitesIPv6 ORDER BY dateLastManualCheck DESC LIMIT 500");
 	$stmt->execute();
 	$result = $stmt->get_result();
 
@@ -317,8 +345,11 @@ function lastManualChecks(){
 				echo "<tr>";
 				echo "<td>" . $jsonData[$i]['domain'] . "</td>";
 				echo "<td>" . str_repeat("★", $jsonData[$i]['resultIPv6']) . str_repeat("☆", 4 - $jsonData[$i]['resultIPv6']) . "</td>";
-				echo "<td>" . $jsonData[$i]['dateLastCheck'] . "</td>";
-				echo "<td>" . $jsonData[$i]['timeLastCheck'] . "</td>";
+				$time = strtotime($jsonData[$i]['dateLastManualCheck'].'UTC');
+				$dateInLocal = date("d/m/Y", $time); // On convertit la date au format local
+				$hourInLocal = date("H:i:s", $time); // On convertir l'heure au format local
+				echo "<td>" . $dateInLocal . "</td>";
+				echo "<td>" . $hourInLocal . "</td>";
 				echo "</tr>";
 				$i++;
 			}

@@ -7,13 +7,11 @@ Ce programme permet d'extraire les informations suivantes concernant une URL ent
 * Les adresses IP de l'utilisateur (IPv4 et IPv6)
 * Le User Agent du navigateur de l'utilisateur
 
-Ce programme contient également trois sous-dossiers :
+Ce programme contient également quatre sous-dossiers :
+* examples, permettant d'afficher sur une page Internet les informations avec un code couleur spécifique (vert en présence d'IPv6, rouge sinon)
 * cronCheck, permettant d'effectuer un Cron mettant à jour la table contenant la liste des serveurs des domaines déjà testés et dont le dernier test remonte à plus d'une semaine et de mettre à jour les tables nécessaires pour afficher les graphiques présents dans le dossier statistics
 * fileUpload, permettant de faire des tests sur les serveurs de plusieurs domaines en même temps à l'aide d'un fichier au format .csv préalablement rempli (un exemple de tel fichier est disponible dans le sous-dossier)
 * statistics, permettant d'afficher des statistiques sous forme de graphes sur le nombre de sites testés et la qualité des sites testés
-
-## Exemple
-Un exemple complet de ce programme est disponible sur [mon site personnel](https://www.baptistehugot.cf/github/informationPageWeb/index.php).
 
 ## Ecrit avec
 * [PHP](https://secure.php.net/) - Le langage de programmation utilisé pour récupérer les informations pertinentes

@@ -55,8 +55,8 @@ ini_set('display_errors','1');
 </html>
 
 <?php
-include("db.php");
-include("basicFunctions.php");
+include("./../db.php");
+include("displayFunctions.php");
 
 if(isset($_POST["choix"]) && $_POST["choix"] != ""){
 	$radioValue = $_POST["choix"]; // On récupère la valeur du radio bouton

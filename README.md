@@ -1,17 +1,21 @@
 # informationPageWeb
-Ce programme permet d'extraire les informations suivantes concernant une URL entrée préalablement par un utilisateur :
-* Les informations sur les serveurs du domaine (adresses IPv4 et IPv6), comprenant la liste des derniers sites testés, un temple de la renommée (sites dont tous les serveurs sont disponibles en IPv6) et un mur de la honte (sites dont tous les serveurs sont disponibles en IPv4 uniquement)
-* Le Whois du domaine
-* Les entêtes HTTP de la page
-* Les balises meta de la page
-* Les adresses IP de l'utilisateur (IPv4 et IPv6)
-* Le User Agent du navigateur de l'utilisateur
+Cette API permet d'extraire les informations suivantes concernant une URL ou une adresse IP entrée préalablement par un utilisateur.
 
-Ce programme contient également quatre sous-dossiers :
-* examples, permettant d'afficher sur une page Internet les informations avec un code couleur spécifique (vert en présence d'IPv6, rouge sinon)
+Ce dépôt contient également un dossier (examples) servant d'exemple d'utilisation de l'API en PHP, qui contient lui-même trois sous-dossiers :
 * cronCheck, permettant d'effectuer un Cron mettant à jour la table contenant la liste des serveurs des domaines déjà testés et dont le dernier test remonte à plus d'une semaine et de mettre à jour les tables nécessaires pour afficher les graphiques présents dans le dossier statistics
 * fileUpload, permettant de faire des tests sur les serveurs de plusieurs domaines en même temps à l'aide d'un fichier au format .csv préalablement rempli (un exemple de tel fichier est disponible dans le sous-dossier)
 * statistics, permettant d'afficher des statistiques sous forme de graphes sur le nombre de sites testés et la qualité des sites testés
+
+## Utilisation
+* Les informations sur les serveurs du domaine (adresses IPv4 et IPv6), à l'aide du mot clé SERVER suivi d'une adresse d'un site Internet
+* Le Whois du domaine, à l'aide du mot clé WHOIS suivi d'une adresse d'un site Internet
+* Les entêtes HTTP de la page, à l'aide du mot clé HEADER suivi d'une adresse d'un site Internet
+* Les balises meta de la page, à l'aide du mot clé META suivi d'une adresse d'un site Internet
+* Les adresses IP de l'utilisateur (IPv4 et IPv6), à l'aide du mot clé USERIP
+* Le User Agent du navigateur de l'utilisateur, à l'aide du mot clé USERAGENT
+* Les informations sur le nom du domaine, à l'aide du mot clé HOSTIP suivi d'une adresse IP (au format IPv4 ou IPv6)
+* Le ping d'une adresse IP ou d'une adresse d'un site Internet, à l'aide du mot clé PINGHOST suivi d'une adresse IP (au format IPv4 ou IPv6) ou d'une adresse d'un site Internet
+* Le ping d'une adresse IP ou d'une adresse d'un site Internet, avec un port précisé, à l'aide des mots clés PINGHOST et PINGPORT suivis respectivement d'une adresse IP (au format IPv4 ou IPv6) ou d'une adresse d'un site Internet et d'un numéro de port
 
 ## Ecrit avec
 * [PHP](https://secure.php.net/) - Le langage de programmation utilisé pour récupérer les informations pertinentes

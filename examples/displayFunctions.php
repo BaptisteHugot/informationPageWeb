@@ -224,7 +224,7 @@ function displayDomainServers(array $arrayWebsiteIPv4WithoutSubdomain, array $ar
 * @param $whois Information du whois
 */
 function displayWhois(array $whois){
-	if($whois === NULL){
+	if($whois === null){
 		echo "Pas de Whois disponible. <br />";
 	}else{
 		echo "<table>";
@@ -250,7 +250,7 @@ function displayWhois(array $whois){
 * @param $values Valeurs du tableau des entêtes HTTP
 */
 function displayHeaders(array $httpHeaders, array $keys, array $values){
-	if($httpHeaders === NULL){
+	if($httpHeaders === null){
 		echo "Pas d'entêtes disponibles. <br />";
 	}else{
 		echo "<table>";
@@ -271,7 +271,7 @@ function displayHeaders(array $httpHeaders, array $keys, array $values){
 * @param $values Valeurs du tableau des balises meta
 */
 function displayMeta(array $metaTags, array $keys, array $values){
-	if($metaTags === NULL){
+	if($metaTags === null){
 		echo "Pas de balises meta disponibles. <br />";
 	}else{
 		echo "<table>";
@@ -312,6 +312,56 @@ function displayUserAgent(string $user){
 	}else{
 		echo "<tr><td><b>User Agent</b></td><td>" . $user . "</td></tr>";
 	}
+}
+
+/**
+* Affiche le serveur correspondant à une adresse IP
+* @param $ip L'adresse IP
+* @param $arrayHosts Tableau comprenant les adresses des serveurs
+*/
+function displayHostsIP(string $ip, array $arrayHosts){
+	if($arrayHosts === null){
+		echo "Pas de serveurs trouvés. <br />";
+	}else{
+		echo "<table>";
+		$i=0;
+		echo "<tr><td><b>Adresse IP</b></td><td><b>Hôtes</b></td></tr>";
+		foreach($arrayHosts as $item){
+			echo "<tr><td>" . $ip . "</td><td>" . $arrayHosts[$i] . "</td></tr>";
+			$i++;
+		}
+		echo "</table>";
+	}
+}
+
+/**
+* Affiche le résultat du ping
+* @param $arrayPing Le tableau comprenant l'hôte et le résultat du ping
+*/
+function displayPing(array $arrayPing){
+	echo "<table>";
+	if(!($arrayPing["ping"])){
+		echo "<tr><td style='background-color:red'><b>Hôte</b></td><td style='background-color:red'>" . $arrayPing["host"] . "</td></tr>";
+	}else{
+		echo "<tr><td style='background-color:palegreen'><b>Hôte</b></td><td style='background-color:palegreen'>" . $arrayPing["host"] . "</td></tr>";
+	}
+	echo "</table>";
+}
+
+/**
+* Affiche le résultat du ping
+* @param $arrayPing Le tableau comprenant l'hôte, le port et le résultat du ping
+*/
+function displayPingPort(array $arrayPing){
+	echo "<table>";
+	if(!($arrayPing["ping"])){
+		echo "<tr><td style='background-color:red'><b>Hôte</b></td><td style='background-color:red'>" . $arrayPing["host"] . "</td></tr>";
+		echo "<tr><td style='background-color:red'><b>Port</b></td><td style='background-color:red'>" . $arrayPing["port"] . "</td></tr>";
+	}else{
+		echo "<tr><td style='background-color:palegreen'><b>Hôte</b></td><td style='background-color:palegreen'>" . $arrayPing["host"] . "</td></tr>";
+		echo "<tr><td style='background-color:palegreen'><b>Port</b></td><td style='background-color:palegreen'>" . $arrayPing["port"] . "</td></tr>";
+	}
+	echo "</table>";
 }
 
 /**

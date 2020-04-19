@@ -60,7 +60,7 @@ function jsonHeader(string $searchedWebsite){
 
 	if(urlExists($searchedWebsite)){
 		list($httpHeaders, $keys, $values) = getHeaders(getLastLocation($searchedWebsite));
-		if($httpHeaders === NULL){
+		if($httpHeaders === null){
 			$jsonData[] = null;
 		}else{
 			$i=0;
@@ -87,7 +87,7 @@ function jsonMeta(string $searchedWebsite){
 	if(urlExists($searchedWebsite)){
 		list($metaTags, $keys, $values) = getMeta(getLastLocation($searchedWebsite));
 
-		if($metaTags === NULL){
+		if($metaTags === null){
 			$jsonData[] = null;
 		}else{
 			$i=0;
@@ -111,8 +111,12 @@ function jsonUserIP(){
 
 	$arrayUserIP = getUserIP();
 
-	$jsonData["IPv4"] = $arrayUserIP["IPv4"];
-	$jsonData["IPv6"] = $arrayUserIP["IPv6"];
+	if($arrayUserIP === null){
+		$jsonData[] = null;
+	}else{
+		$jsonData["IPv4"] = $arrayUserIP["IPv4"];
+		$jsonData["IPv6"] = $arrayUserIP["IPv6"];
+	}
 
 	echo json_encode($jsonData, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
 }
@@ -124,6 +128,90 @@ function jsonUserAgent(){
 	$jsonData = array();
 
 	$jsonData["User Agent"] = getUserAgent();
+
+	echo json_encode($jsonData, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+}
+
+/**
+* Retourne le Whois du nom de domaine
+*/
+function jsonWhois(string $searchedWebsite){
+	$jsonData = array();
+	list($hostWithoutSubdomain, $hostWithWWW, $hostWithSubdomain, $hasSubdomain, $hasWWW, $extension) = arrayDomains($searchedWebsite);
+
+	$jsonData["Whois"] = getWhois($hostWithoutSubdomain, $extension);
+
+	echo json_encode($jsonData, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+}
+
+
+/**
+* Retourne le nom de domaine associé à une adresse IP au format Json
+*/
+function jsonHostIP(string $ip){
+	$jsonData = array();
+
+	if(filter_var($ip, FILTER_VALIDATE_IP)){
+		list($ip, $arrayHosts) = getHosts($ip);
+
+		if($arrayHosts === null){
+			$jsonData[] = null;
+		}else{
+			$jsonData["IP"] = $ip;
+			$i=0;
+			foreach($arrayHosts as $item){
+				$jsonData["Host " .$i] = $arrayHosts[$i];
+				$i++;
+			}
+		}
+	}else{
+		$jsonData[] = null;
+	}
+	echo json_encode($jsonData, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+}
+
+/**
+* Retourne le nom d'hôte, le port et la réussite ou non du ping
+*/
+function jsonPingWithPort(string $host, string $port){
+	$jsonData = array();
+	$port = intval($port);
+
+	if(filter_var($host, FILTER_VALIDATE_IP) || urlExists(cleanEntry($host))){
+		$arrayPing = pingWithPort($host, $port);
+
+		if($arrayPing === null){
+			$jsonData[] = null;
+		}else{
+			$jsonData["host"] = $arrayPing["host"];
+			$jsonData["port"] = $arrayPing["port"];
+			$jsonData["ping"] = $arrayPing["ping"];
+		}
+	}else{
+		$jsonData[] = null;
+	}
+
+	echo json_encode($jsonData, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+}
+
+/**
+* Retourne le nom d'hôte et la réussite ou non du ping
+*/
+function jsonPingWithoutPort(string $host){
+	$jsonData = array();
+
+	if(filter_var($host, FILTER_VALIDATE_IP) || urlExists(cleanEntry($host))){
+		$arrayPing = pingWithoutPort($host);
+
+		if($arrayPing === null){
+			$jsonData[] = null;
+		}else{
+			$jsonData["host"] = $arrayPing["host"];
+			$jsonData["ping"] = $arrayPing["ping"];
+		}
+	}else{
+		$jsonData[] = null;
+	}
 
 	echo json_encode($jsonData, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
 }
@@ -145,6 +233,19 @@ function appelAPI(){
 		jsonUserIP();
 	}else if(isset($_GET['USERAGENT']) && $_GET['USERAGENT'] == ""){
 		jsonUserAgent();
+	}else if(isset($_GET['WHOIS']) && $_GET['WHOIS'] != ""){
+		$website = $_GET['WHOIS'];
+		jsonWhois($website);
+	}else if(isset($_GET['HOSTIP']) && $_GET['HOSTIP'] != ""){
+		$ip = $_GET['HOSTIP'];
+		jsonHostIP($ip);
+	}else if(isset($_GET['PINGHOST']) && $_GET['PINGHOST'] != "" && isset($_GET['PINGPORT']) && $_GET['PINGPORT'] != ""){
+		$host = $_GET['PINGHOST'];
+		$port = $_GET['PINGPORT'];
+		jsonPingWithPort($host, $port);
+	}else if(isset($_GET['PINGHOST']) && $_GET['PINGHOST'] != ""){
+		$host = $_GET['PINGHOST'];
+		jsonPingWithoutPort($host);
 	}
 }
 

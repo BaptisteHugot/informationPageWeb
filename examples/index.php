@@ -41,13 +41,16 @@ ini_set('display_errors','1');
 		<br />
 		<input type="radio" id="usersIP" name="choix" value="usersIP" class="radioSelect" required> Adresses IP de l'utilisateur
 		<input type="radio" id="userAgent" name="choix" value="userAgent" class="radioSelect" required> Navigateur de l'utilisateur
-
 		<br />
-
+		<input type="radio" id="hostIP" name="choix" value="hostIP" class="radioSelect" required> Adresse IP du domaine
+		<input type="radio" id="ping" name="choix" value="ping" class="radioSelect" required> Hôte à pinger
+		<input type="radio" id="pingPort" name="choix" value="pingPort" class="radioSelect" required> Hôte et port à pinger
+		<br />
 		<input type="text" class="specificField serveur whois http meta" id="site" name="site" placeholder="URL de la page Internet : " />
-
+		<input type="text" class="specificField hostIP" id="ip" name="ip" placeholder="Adresse IP : " />
+		<input type="text" class="specificField ping pingPort" id="host" name="host" placeholder="Hôte : " />
+		<input type="text" class="specificField pingPort" id="port" name="port" placeholder="Port : " />
 		<br />
-
 		<input type="submit" name="submit"></input>
 	</form>
 
@@ -55,11 +58,14 @@ ini_set('display_errors','1');
 </html>
 
 <?php
-include("./../db.php");
+include("./db.php");
 include("displayFunctions.php");
+include("db_insertion.php");
 
 if(isset($_POST["choix"]) && $_POST["choix"] != ""){
 	$radioValue = $_POST["choix"]; // On récupère la valeur du radio bouton
+
+	$start = microtime(true); // Début du chronomètre
 
 	if($radioValue === "usersIP"){
 		$usersIP = getUserIP();
@@ -75,8 +81,6 @@ if(isset($_POST["choix"]) && $_POST["choix"] != ""){
 		displayHallOfShame();
 	}else{
 		if(isset($_POST["site"]) && $_POST["site"] != ""){
-			$start = microtime(true); // Début du chronomètre
-
 			$searchedWebsite = $_POST["site"]; // On récupère la valeur du champ texte
 			$searchedWebsite = cleanEntry($searchedWebsite);
 
@@ -108,13 +112,42 @@ if(isset($_POST["choix"]) && $_POST["choix"] != ""){
 
 					displayMeta($metaTags, $keys,$values);
 				}
-				$end = microtime(true); // Fin du chronomètre
-				displayExecutionTime($start, $end);
+
 				mysqli_close($connexion); // On ferme la connexion à la base de données
 			}else{
 				displayErrorFormat();
 			}
+		}else if(isset($_POST["ip"]) && $_POST["ip"] != ""){
+			if($radioValue === "hostIP"){
+				$ip = $_POST["ip"];
+
+				list($ip, $arrayHosts) = getHosts($ip);
+
+				displayHostsIP($ip, $arrayHosts);
+			}
+		}else if(isset($_POST["host"]) && $_POST["host"] != "" && isset($_POST["port"]) && $_POST["port"] != ""){
+			if($radioValue === "pingPort"){
+				$host = $_POST["host"];
+				$port = $_POST["port"];
+				$port = intval($port);
+
+				$arrayPing = array();
+				$arrayPing = pingWithPort($host, $port);
+
+				displayPingPort($arrayPing);
+			}
+		}else if(isset($_POST["host"]) && $_POST["host"] != ""){
+			if($radioValue === "ping"){
+				$host = $_POST["host"];
+
+				$arrayPing = array();
+				$arrayPing = pingWithoutPort($host);
+
+				displayPing($arrayPing);
+			}
 		}
+		$end = microtime(true); // Fin du chronomètre
+		displayExecutionTime($start, $end);
 	}
 }
 ?>

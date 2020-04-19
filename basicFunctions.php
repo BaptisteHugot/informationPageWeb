@@ -172,74 +172,6 @@ function cleanEntry(string $searchedWebsite) : string{
 }
 
 /**
-* Insertion dans la base de données lorsqu'un utilisateur entre un domaine
-* @param $arrayResultsIPv6 Le tableau comprenant les informations sur les adresses IPv6
-* @param $hostWithoutSubdomain Le nom de l'hôte sans le sous-domaine
-*/
-function manualCheckInsertion(array $arrayResultsIPv6, string $hostWithoutSubdomain){
-	date_default_timezone_set('UTC');
-	$dateManualEntry = date("Y-m-d H:i:s");
-
-	global $connexion;
-
-	$hostWithoutSubdomain = $connexion->real_escape_string($hostWithoutSubdomain);// Pour éviter une injection SQL
-	$arrayResultsIPv6["hasDomainIPv6"] = intval($arrayResultsIPv6["hasDomainIPv6"]);
-	$arrayResultsIPv6["hasWWWIPv6"] = intval($arrayResultsIPv6["hasWWWIPv6"]);
-	$arrayResultsIPv6["hasMXServersIPv6"] = intval($arrayResultsIPv6["hasMXServersIPv6"]);
-	$arrayResultsIPv6["hasNSServersIPv6"] = intval($arrayResultsIPv6["hasNSServersIPv6"]);
-	$arrayResultsIPv6["resultIPv6"] = intval($arrayResultsIPv6["resultIPv6"]);
-
-	$stmt = $connexion->prepare("SELECT domain FROM websitesIPv6 WHERE domain = ? LIMIT 1");
-	$stmt->bind_param("s", $hostWithoutSubdomain);
-	$stmt->execute();
-	$result = $stmt->get_result();
-
-	if($result->num_rows === 0){ // Pas de résultat trouvé, on insère
-		$stmtInsertion = $connexion->prepare("INSERT INTO websitesIPv6 (domain, hasDomainIPv6, hasWWWIPv6, hasMXServersIPv6, hasNSServersIPv6, resultIPv6, dateLastManualCheck, dateLastAutomaticCheck) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-		$stmtInsertion->bind_param("siiiiiss", $hostWithoutSubdomain, $arrayResultsIPv6["hasDomainIPv6"], $arrayResultsIPv6["hasWWWIPv6"], $arrayResultsIPv6["hasMXServersIPv6"], $arrayResultsIPv6["hasNSServersIPv6"], $arrayResultsIPv6["resultIPv6"], $dateManualEntry, $dateManualEntry);
-		$stmtInsertion->execute();
-	}else{ // On modifie le résulat existant
-		$stmtDelete = $connexion->prepare("DELETE FROM websitesIPv6 WHERE domain = ?");
-		$stmtDelete->bind_param("s", $hostWithoutSubdomain);
-		$stmtDelete->execute();
-
-		$stmtInsertion = $connexion->prepare("INSERT INTO websitesIPv6 (domain, hasDomainIPv6, hasWWWIPv6, hasMXServersIPv6, hasNSServersIPv6, resultIPv6, dateLastManualCheck, dateLastAutomaticCheck) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-		$stmtInsertion->bind_param("siiiiiss", $hostWithoutSubdomain, $arrayResultsIPv6["hasDomainIPv6"], $arrayResultsIPv6["hasWWWIPv6"], $arrayResultsIPv6["hasMXServersIPv6"], $arrayResultsIPv6["hasNSServersIPv6"], $arrayResultsIPv6["resultIPv6"], $dateManualEntry, $dateManualEntry);
-		$stmtInsertion->execute();
-	}
-
-	mysqli_free_result($result); // On libère la variable utilisée pour récupérer le résultat de la requête SQL
-}
-
-/**
-* Incrémente la table numberOfTests à chaque test effectué par un utilisateur
-*/
-function manualDateInsertion(){
-	date_default_timezone_set('UTC');
-	$dateManualEntry = date("Y-m-d");
-
-	global $connexion;
-
-	$dateManualEntry = $connexion->real_escape_string($dateManualEntry);// Pour éviter une injection SQL
-	$stmt = $connexion->prepare("SELECT dateTests FROM numberOfTests WHERE dateTests = ? LIMIT 1");
-	$stmt->bind_param("s", $dateManualEntry);
-	$stmt->execute();
-	$result = $stmt->get_result();
-
-	if($result->num_rows === 0){ // Pas de résultat trouvé, on insère
-		$stmtInsertion = $connexion->prepare("INSERT INTO numberOfTests (dateTests, numberTests) VALUES (?, 1)");
-		$stmtInsertion->bind_param("s", $dateManualEntry);
-		$stmtInsertion->execute();
-	}else{ // On modifie le résulat existant
-		$stmtUpdate = $connexion->prepare("UPDATE numberOfTests SET numberTests = numberTests + 1 WHERE dateTests = ?");
-		$stmtUpdate->bind_param("s", $dateManualEntry);
-		$stmtUpdate->execute();
-	}
-
-	mysqli_free_result($result); // On libère la variable utilisée pour récupérer le résultat de la requête SQL
-}
-
-/**
 * Retourne le User Agent du navigateur de l'utilisateur
 * @return $user User Agent du navigateur de l'utilisateur
 */
@@ -530,6 +462,149 @@ function getHeaders(string $searchedWebsite) : array{
 
 	$arrayResult = array($httpHeaders, $keys, $values);
 	return $arrayResult;
+}
+
+/**
+* Fonction qui inverse l'adresse IPv4 et ajoute le bon suffixe pour la recherche inversée
+* @param $ip L'adresse IPv4 d'origine
+* @return $ip L'adresse IPv4 retraitée
+*/
+function revertIPv4(string $ip) : string{
+	$arrayIP = array();
+	$arrayIP = explode(".", $ip); // On stocke chaque octet dans une case d'un tableau
+	$arrayIP = array_reverse($arrayIP); // On inverse les cases du tableau
+
+	$ipTreatment = implode(".", $arrayIP); // On concatène les cases du tableau en ajoutant un .
+	$ipTreatment = $ipTreatment . ".in-addr.arpa"; // On ajoute le suffixe in-addr.arpa
+
+	return $ipTreatment;
+}
+
+/**
+* Fonction qui inverse l'adresse IPv6 et ajoute le bon suffixe pour la recherche inversée
+* @param $ip L'adresse IPv6 d'origine
+* @return $ip L'adresse IPv6 retraitée
+*/
+function revertIPv6(string $ip) : string{
+	$ip = expand($ip);
+
+	$ipTreatment = str_replace(":","",$ip); // On supprime les :
+	$ipTreatment = strrev($ipTreatment); // On inverse la chaîne de caractères
+	$ipTreatment = implode('.',str_split($ipTreatment)); // On ajoute un point entre chaque caractère
+	$ipTreatment = $ipTreatment . ".ip6.arpa"; // On ajoute le suffixe ip6.arpa
+
+	return $ipTreatment;
+}
+
+/**
+* Retourne une adresse IPv6 comprenant tous les éléments qui ne sont pas obligatoire
+* @param $ip L'adresse IPv6 en format compact
+* @return $ip L'adresse IPv6 en format long
+*/
+function expand(string $ip) : string{
+	$hex = unpack("H*hex", inet_pton($ip));
+	$ip = substr(preg_replace("/([A-f0-9]{4})/", "$1:", $hex['hex']), 0, -1);
+
+	return $ip;
+}
+
+/**
+* Fonction qui retourne l'ensemble des noms de domaine associés à une adresse IP donnée
+* @param $ip L'adresse IP recherchée
+* @return $arrayHosts Tableau comprenant l'ensemble des noms de domaine
+*/
+function getHosts(string $ip) : array{
+	$arrayIP = array();
+	$arrayHosts = array();
+
+	if(filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)){
+		$cleanIP = revertIPv6($ip);
+	}else if(filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)){
+		$cleanIP = revertIPv4($ip);
+	}
+
+	$arrayIP = dns_get_record($cleanIP);
+
+	$i = 0;
+	foreach($arrayIP as $item){
+		switch($arrayIP[$i]["type"]){
+			case "PTR":
+			$host = $arrayIP[$i]["target"];
+			$index = array_search($host,$arrayHosts);
+			if($index === FALSE){
+				array_push($arrayHosts,$host);
+			}
+			break;
+			$i++;
+		}
+	}
+
+	$arrayHosts = array($ip, $arrayHosts);
+	return $arrayHosts;
+}
+
+/**
+* Indique sur quel système d'exploitation PHP est en train de fonctionner
+* @return $runOS Le système d'exploitation (Windows ou Autre)
+*/
+function phpRunOs() : string{
+	if(strtoupper(substr(php_uname('s'),0,3)) === "WIN"){
+		$runOS = "Windows";
+	}else{
+		$runOS = "Other";
+	}
+
+	return $runOS;
+}
+
+/**
+* Fonction qui teste si un ping sur une adresse IP ou un serveur fonctionne
+* @param $host L'adresse IP ou le nom du serveur Web
+* @return Tableau avec l'hôte testé et si le ping a réussi ou non
+*/
+function pingWithoutPort($host) : array{
+	$arrayPing = array();
+
+	if(phpRunOs() === "Windows"){
+		$pingresult = exec("ping -n 1 $host", $outcome, $status);
+	}else{
+		$pingresult = exec("ping -c1 $host", $outcome, $status);
+	}
+
+	if (0 == $status) {
+		$ping = TRUE;
+	}else {
+		$ping = FALSE;
+	}
+
+	$arrayPing["host"] = $host;
+	$arrayPing["ping"] = $ping;
+
+	return $arrayPing;
+}
+
+/**
+* Fonction qui teste si un ping sur une adresse IP ou un serveur, avec un port spécifié, fonctionne
+* @param $host L'adresse IP ou le nom du serveur Web
+* @param $port Le port testé
+* @return Tableau avec l'hôte et le port testés et si le ping a réussi ou non
+*/
+function pingWithPort($host, $port) : array{
+	$arrayPing = array();
+	$timeout = 9;
+
+	$fsock = fsockopen($host, $port, $errno, $errstr, $timeout);
+	if (!$fsock){
+		$ping = FALSE;
+	}else{
+		$ping = TRUE;
+	}
+
+	$arrayPing["host"] = $host;
+	$arrayPing["port"] = $port;
+	$arrayPing["ping"] = $ping;
+
+	return $arrayPing;
 }
 
 /**

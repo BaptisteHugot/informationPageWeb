@@ -407,6 +407,52 @@ function getUserIP() : array{
 }
 
 /**
+* Retourne des informations sur une adresse IP donnée
+* @param $ip Adresse IP
+* @return $result Tableau comprenant les informations sur l'adresse IP
+*/
+function getInfoFromIP(string $ip): array{
+	$infoIP = file_get_contents("http://ip-api.com/json/".$ip."?fields=status,message,continent,continentCode,country,countryCode,region,regionName,city,district,zip,lat,lon,timezone,currency,isp,org,as,asname,reverse,mobile,proxy,hosting,query&lang=fr");
+	$jsonInfoIP = json_decode($infoIP);
+
+	// Le champ message n'existe que lorsque le statut de la requête a pour valeur "fail"
+	if($jsonInfoIP->status === "fail"){
+		$jsonInfoIPMessage = $jsonInfoIP->message;
+	}else{
+		$jsonInfoIPMessage = "";
+	}
+
+	$result = array(
+		"status" => $jsonInfoIP->status,
+		"message" => $jsonInfoIPMessage,
+		"continent" => $jsonInfoIP->continent,
+		"continentCode" => $jsonInfoIP->continentCode,
+		"country" => $jsonInfoIP->country,
+		"countryCode" => $jsonInfoIP->countryCode,
+		"region" => $jsonInfoIP->region,
+		"regionName" => $jsonInfoIP->regionName,
+		"city" => $jsonInfoIP->city,
+		"district" => $jsonInfoIP->district,
+		"zip" => $jsonInfoIP->zip,
+		"lat" => $jsonInfoIP->lat,
+		"lon" => $jsonInfoIP->lon,
+		"timezone" => $jsonInfoIP->timezone,
+		"currency" => $jsonInfoIP->currency,
+		"isp" => $jsonInfoIP->isp,
+		"org" => $jsonInfoIP->org,
+		"as" => $jsonInfoIP->as,
+		"asname" => $jsonInfoIP->asname,
+		"reverse" => $jsonInfoIP->reverse,
+		"mobile" => $jsonInfoIP->mobile,
+		"proxy" => $jsonInfoIP->proxy,
+		"hosting" => $jsonInfoIP->hosting,
+		"query" => $jsonInfoIP->query
+	);
+
+	return $result;
+}
+
+/**
 * Retourne le Whois d'un domaine spécifique
 * @param $hostWithoutSubdomain Le nom de domaine
 * @param $extension L'extension associée au nom de domaine

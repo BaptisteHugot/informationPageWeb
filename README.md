@@ -11,11 +11,12 @@ Ce dépôt contient également un dossier (examples) servant d'exemple d'utilisa
 * Le Whois du domaine, à l'aide du mot clé WHOIS suivi d'une adresse d'un site Internet
 * Les entêtes HTTP de la page, à l'aide du mot clé HEADER suivi d'une adresse d'un site Internet
 * Les balises meta de la page, à l'aide du mot clé META suivi d'une adresse d'un site Internet
-* Les adresses IP de l'utilisateur (IPv4 et IPv6), à l'aide du mot clé USERIP
+* Les adresses IP de l'utilisateur (IPv4 et IPv6) et leurs informations associées, à l'aide du mot clé USERIP
 * Le User Agent du navigateur de l'utilisateur, à l'aide du mot clé USERAGENT
 * Les informations sur le nom du domaine, à l'aide du mot clé HOSTIP suivi d'une adresse IP (au format IPv4 ou IPv6)
 * Le ping d'une adresse IP ou d'une adresse d'un site Internet, à l'aide du mot clé PINGHOST suivi d'une adresse IP (au format IPv4 ou IPv6) ou d'une adresse d'un site Internet
 * Le ping d'une adresse IP ou d'une adresse d'un site Internet, avec un port précisé, à l'aide des mots clés PINGHOST et PINGPORT suivis respectivement d'une adresse IP (au format IPv4 ou IPv6) ou d'une adresse d'un site Internet et d'un numéro de port
+* Les informations liées à une adresse IP (localisation, AS...), à l'aide du mot clé IPINFO suivi d'une adresse IP (au format IPv4 ou IPv6)
 
 ## Ecrit avec
 * [PHP](https://secure.php.net/) - Le langage de programmation utilisé pour récupérer les informations pertinentes
@@ -29,6 +30,7 @@ Ce dépôt contient également un dossier (examples) servant d'exemple d'utilisa
 * [Chart.js](https://www.chartjs.org/) - La bibliothèque utilisée pour afficher des graphiques
 * [ipify](https://www.ipify.org/) - La bibliothèque utilisée pour connaître les adresses IP de l'utilisateur
 * [php-whois](https://github.com/regru/php-whois/blob/master/src/Phois/Whois/whois.servers.json) - Contient la liste des serveurs utilisés par les registrars
+* [ip-api](https://ip-api.com/) - La bibliothèque utilisée pour récupérer les informations, notamment de localisation, d'une adresse IP
 
 ## Versions
 [SemVer](http://semver.org/) est utilisé pour la gestion de versions. Pour connaître les versions disponibles, veuillez vous référer aux [étiquettes disponibles dans ce dépôt](https://github.com/BaptisteHugot/informationPageWeb/releases/).

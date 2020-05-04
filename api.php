@@ -112,10 +112,70 @@ function jsonUserIP(){
 	$arrayUserIP = getUserIP();
 
 	if($arrayUserIP === null){
-		$jsonData[] = null;
+		$jsonData[][] = null;
 	}else{
-		$jsonData["IPv4"] = $arrayUserIP["IPv4"];
-		$jsonData["IPv6"] = $arrayUserIP["IPv6"];
+		$arrayInfoIPv4 = getInfoFromIP($arrayUserIP["IPv4"]);
+		$arrayInfoIPv6 = getInfoFromIP($arrayUserIP["IPv6"]);
+
+		// On teste que l'adresse IPv4 existe
+		if($arrayUserIP["IPv4"] === ""){
+			$jsonData["IPv4"][] = null;
+		}else{
+			$jsonData["IPv4"]["IP"] = $arrayInfoIPv4["query"];
+			$jsonData["IPv4"]["Statut"] = $arrayInfoIPv4["status"];
+			$jsonData["IPv4"]["Message"] = $arrayInfoIPv4["message"];
+			$jsonData["IPv4"]["Continent"] = $arrayInfoIPv4["continent"];
+			$jsonData["IPv4"]["Code Continent"] = $arrayInfoIPv4["continentCode"];
+			$jsonData["IPv4"]["Pays"] = $arrayInfoIPv4["country"];
+			$jsonData["IPv4"]["Code Pays"] = $arrayInfoIPv4["countryCode"];
+			$jsonData["IPv4"]["Code Région"] = $arrayInfoIPv4["region"];
+			$jsonData["IPv4"]["Région"] = $arrayInfoIPv4["regionName"];
+			$jsonData["IPv4"]["Ville"] = $arrayInfoIPv4["city"];
+			$jsonData["IPv4"]["District"] = $arrayInfoIPv4["district"];
+			$jsonData["IPv4"]["Code postal"] = $arrayInfoIPv4["zip"];
+			$jsonData["IPv4"]["Latitude"] = $arrayInfoIPv4["lat"];
+			$jsonData["IPv4"]["Longitude"] = $arrayInfoIPv4["lon"];
+			$jsonData["IPv4"]["Fuseau horaire"] = $arrayInfoIPv4["timezone"];
+			$jsonData["IPv4"]["Monnaie"] = $arrayInfoIPv4["currency"];
+			$jsonData["IPv4"]["FAI"] = $arrayInfoIPv4["isp"];
+			$jsonData["IPv4"]["Organisation"] = $arrayInfoIPv4["org"];
+			$jsonData["IPv4"]["AS"] = $arrayInfoIPv4["as"];
+			$jsonData["IPv4"]["Nom AS"] = $arrayInfoIPv4["asname"];
+			$jsonData["IPv4"]["DNS Inverse"] = $arrayInfoIPv4["reverse"];
+			$jsonData["IPv4"]["Connexion Mobile"] = $arrayInfoIPv4["mobile"];
+			$jsonData["IPv4"]["Proxy"] = $arrayInfoIPv4["proxy"];
+			$jsonData["IPv4"]["Hébergement"] = $arrayInfoIPv4["hosting"];
+		}
+
+		// On teste que l'adresse IPv6 existe
+		if($arrayUserIP["IPv6"] === ""){
+			$jsonData["IPv6"][] = null;
+		}else{
+			$jsonData["IPv6"]["IP"] = $arrayInfoIPv6["query"];
+			$jsonData["IPv6"]["Statut"] = $arrayInfoIPv6["status"];
+			$jsonData["IPv6"]["Message"] = $arrayInfoIPv6["message"];
+			$jsonData["IPv6"]["Continent"] = $arrayInfoIPv6["continent"];
+			$jsonData["IPv6"]["Code Continent"] = $arrayInfoIPv6["continentCode"];
+			$jsonData["IPv6"]["Pays"] = $arrayInfoIPv6["country"];
+			$jsonData["IPv6"]["Code Pays"] = $arrayInfoIPv6["countryCode"];
+			$jsonData["IPv6"]["Code Région"] = $arrayInfoIPv6["region"];
+			$jsonData["IPv6"]["Région"] = $arrayInfoIPv6["regionName"];
+			$jsonData["IPv6"]["Ville"] = $arrayInfoIPv6["city"];
+			$jsonData["IPv6"]["District"] = $arrayInfoIPv6["district"];
+			$jsonData["IPv6"]["Code postal"] = $arrayInfoIPv6["zip"];
+			$jsonData["IPv6"]["Latitude"] = $arrayInfoIPv6["lat"];
+			$jsonData["IPv6"]["Longitude"] = $arrayInfoIPv6["lon"];
+			$jsonData["IPv6"]["Fuseau horaire"] = $arrayInfoIPv6["timezone"];
+			$jsonData["IPv6"]["Monnaie"] = $arrayInfoIPv6["currency"];
+			$jsonData["IPv6"]["FAI"] = $arrayInfoIPv6["isp"];
+			$jsonData["IPv6"]["Organisation"] = $arrayInfoIPv6["org"];
+			$jsonData["IPv6"]["AS"] = $arrayInfoIPv6["as"];
+			$jsonData["IPv6"]["Nom AS"] = $arrayInfoIPv6["asname"];
+			$jsonData["IPv6"]["DNS Inverse"] = $arrayInfoIPv6["reverse"];
+			$jsonData["IPv6"]["Connexion Mobile"] = $arrayInfoIPv6["mobile"];
+			$jsonData["IPv6"]["Proxy"] = $arrayInfoIPv6["proxy"];
+			$jsonData["IPv6"]["Hébergement"] = $arrayInfoIPv6["hosting"];
+		}
 	}
 
 	echo json_encode($jsonData, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
@@ -143,7 +203,6 @@ function jsonWhois(string $searchedWebsite){
 
 	echo json_encode($jsonData, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
 }
-
 
 /**
 * Retourne le nom de domaine associé à une adresse IP au format Json
@@ -217,6 +276,45 @@ function jsonPingWithoutPort(string $host){
 }
 
 /**
+* Retourne les informations sur une adresse IP
+*/
+function jsonInfoIP(string $ip){
+	$jsonData = array();
+	$arrayInfoIP = getInfoFromIP($ip);
+
+	if(filter_var($ip, FILTER_VALIDATE_IP)){
+		$jsonData["IP"] = $arrayInfoIP["query"];
+		$jsonData["Statut"] = $arrayInfoIP["status"];
+		$jsonData["Message"] = $arrayInfoIP["message"];
+		$jsonData["Continent"] = $arrayInfoIP["continent"];
+		$jsonData["Code Continent"] = $arrayInfoIP["continentCode"];
+		$jsonData["Pays"] = $arrayInfoIP["country"];
+		$jsonData["Code Pays"] = $arrayInfoIP["countryCode"];
+		$jsonData["Code Région"] = $arrayInfoIP["region"];
+		$jsonData["Région"] = $arrayInfoIP["regionName"];
+		$jsonData["Ville"] = $arrayInfoIP["city"];
+		$jsonData["District"] = $arrayInfoIP["district"];
+		$jsonData["Code postal"] = $arrayInfoIP["zip"];
+		$jsonData["Latitude"] = $arrayInfoIP["lat"];
+		$jsonData["Longitude"] = $arrayInfoIP["lon"];
+		$jsonData["Fuseau horaire"] = $arrayInfoIP["timezone"];
+		$jsonData["Monnaie"] = $arrayInfoIP["currency"];
+		$jsonData["FAI"] = $arrayInfoIP["isp"];
+		$jsonData["Organisation"] = $arrayInfoIP["org"];
+		$jsonData["AS"] = $arrayInfoIP["as"];
+		$jsonData["Nom AS"] = $arrayInfoIP["asname"];
+		$jsonData["DNS Inverse"] = $arrayInfoIP["reverse"];
+		$jsonData["Connexion Mobile"] = $arrayInfoIP["mobile"];
+		$jsonData["Proxy"] = $arrayInfoIP["proxy"];
+		$jsonData["Hébergement"] = $arrayInfoIP["hosting"];
+	}else{
+		$jsonData[] = null;
+	}
+
+	echo json_encode($jsonData, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+}
+
+/**
 * Fonction qui sert à traiter les différents cas d'appel de l'API
 */
 function appelAPI(){
@@ -233,6 +331,9 @@ function appelAPI(){
 		jsonUserIP();
 	}else if(isset($_GET['USERAGENT']) && $_GET['USERAGENT'] == ""){
 		jsonUserAgent();
+	}else if(isset($_GET['IPINFO']) && $_GET['IPINFO'] != ""){
+		$ip = $_GET["IPINFO"];
+		jsonInfoIP($ip);
 	}else if(isset($_GET['WHOIS']) && $_GET['WHOIS'] != ""){
 		$website = $_GET['WHOIS'];
 		jsonWhois($website);
